@@ -1,4 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import Cors from "cors";
+import initMiddleware from "../../lib/init-middleware";
+
+// Initialize the cors middleware
+const cors = initMiddleware(
+  // You can read more about the available options here: https://github.com/expressjs/cors#configuration-options
+  Cors({
+    // Only allow requests with GET, POST and OPTIONS
+    methods: ["GET", "POST", "OPTIONS"],
+  })
+);
 
 function sortCriteriaGenerator(accessor, { asc = true, desc = false }) {
   return (a, b) => {
@@ -51,6 +62,8 @@ async function getAllData() {
 }
 
 export default async (req, res) => {
+  await cors(req, res);
+
   const result = await getAllData();
   res.statusCode = 200;
   res.json(result);
