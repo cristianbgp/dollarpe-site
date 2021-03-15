@@ -27,9 +27,18 @@ const buyCriteriaDesc = sortCriteriaGenerator((item) => item[1].buy, {
   desc: true,
 });
 
-async function getData({ url, method = "GET", accesorToBuy, accesorToSell }) {
+async function getData({
+  url,
+  method = "GET",
+  headers,
+  body,
+  accesorToBuy,
+  accesorToSell,
+}) {
   const response = await fetch(url, {
-    method: method,
+    method,
+    headers,
+    body,
   });
   const data = await response.json();
   return { buy: accesorToBuy(data), sell: accesorToSell(data) };
@@ -51,10 +60,14 @@ async function getAllData() {
       accesorToSell: (data) => data.tc.ask,
     }),
     getData({
-      url: "https://tkambio.com/wp-admin/admin-ajax.php?action=get_tipo_cambio",
+      url: "https://tkambio.com/wp-admin/admin-ajax.php",
       method: "POST",
-      accesorToBuy: (data) => Number(data.sell_type_change),
-      accesorToSell: (data) => Number(data.buy_type_change),
+      body: "action=get_exchange_rate",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
+      accesorToBuy: (data) => Number(data.buying_rate),
+      accesorToSell: (data) => Number(data.selling_rate),
     }),
   ]);
   let result = Object.entries(dollar).sort(buyCriteriaDesc);
