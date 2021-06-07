@@ -51,6 +51,7 @@ async function getAllData() {
     dollar.kambista,
     dollar.tkambio,
     dollar.roblex,
+    dollar.decamoney,
   ] = await Promise.all([
     getData({
       url: "https://app.rextie.com/api/v1/fxrates/rate/",
@@ -59,8 +60,7 @@ async function getAllData() {
       accesorToSell: (data) => Number(data.fx_rate_sell),
     }),
     getData({
-      url:
-        "https://api.kambista.com/v1/exchange/calculates?originCurrency=USD&destinationCurrency=PEN&active=S&amount=1",
+      url: "https://api.kambista.com/v1/exchange/calculates?originCurrency=USD&destinationCurrency=PEN&active=S&amount=1",
       accesorToBuy: (data) => data.tc.bid,
       accesorToSell: (data) => data.tc.ask,
     }),
@@ -79,6 +79,11 @@ async function getAllData() {
       accesorToBuy: (data) => Number(data.amountBuy),
       accesorToSell: (data) => Number(data.amountSale),
     }),
+    getData({
+      url: "https://api.decamoney.com/v1/rates",
+      accesorToBuy: (data) => Number(data.exchange_rate.buy),
+      accesorToSell: (data) => Number(data.exchange_rate.sell),
+    }),
   ]);
   let result = Object.entries(dollar).sort(buyCriteriaDesc);
   return result;
@@ -88,6 +93,10 @@ export default async (req, res) => {
   await cors(req, res);
 
   const result = await getAllData();
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=60, stale-while-revalidate=30"
+  );
   res.statusCode = 200;
   res.json(result);
 };
