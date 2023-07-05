@@ -1,6 +1,5 @@
 import useSWR from "swr";
 import fetcher from "utils/fetcher";
-import pageUrls from "utils/pageUrls";
 import Fallback from "./Fallback";
 
 export default function ResultsBlock() {
@@ -20,11 +19,11 @@ export default function ResultsBlock() {
       {!data ? (
         <Fallback />
       ) : (
-        data.map(([name, { buy, sell }], index) => (
+        data.map(([name, { buy, sell, pageUrl }], index) => (
           <span key={name} className="flex flex-col">
             <span>
               <a
-                href={pageUrls[name]}
+                href={pageUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-red-400 border-b border-red-400 border-dashed"

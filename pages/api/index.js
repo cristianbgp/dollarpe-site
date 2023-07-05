@@ -34,6 +34,7 @@ async function getData({
   body,
   accesorToBuy,
   accesorToSell,
+  pageUrl,
 }) {
   const response = await fetch(url, {
     method,
@@ -41,7 +42,7 @@ async function getData({
     body,
   });
   const data = await response.json();
-  return { buy: accesorToBuy(data), sell: accesorToSell(data) };
+  return { buy: accesorToBuy(data), sell: accesorToSell(data), pageUrl };
 }
 
 async function getAllData() {
@@ -52,17 +53,20 @@ async function getAllData() {
     dollar.tkambio,
     dollar.roblex,
     dollar.decamoney,
+    dollar.tucambista,
   ] = await Promise.all([
     getData({
       url: "https://app.rextie.com/api/v1/fxrates/rate/",
       method: "POST",
       accesorToBuy: (data) => Number(data.fx_rate_buy),
       accesorToSell: (data) => Number(data.fx_rate_sell),
+      pageUrl: "https://www.rextie.com/",
     }),
     getData({
       url: "https://api.kambista.com/v1/exchange/calculates?originCurrency=USD&destinationCurrency=PEN&active=S&amount=1",
       accesorToBuy: (data) => data.tc.bid,
       accesorToSell: (data) => data.tc.ask,
+      pageUrl: "https://kambista.com/",
     }),
     getData({
       url: "https://tkambio.com/wp-admin/admin-ajax.php",
@@ -73,16 +77,29 @@ async function getAllData() {
       },
       accesorToBuy: (data) => Number(data.buying_rate),
       accesorToSell: (data) => Number(data.selling_rate),
+      pageUrl: "https://tkambio.com/",
     }),
     getData({
       url: "https://operations.roblex.pe/valuation/active-valuation",
       accesorToBuy: (data) => Number(data.amountBuy),
       accesorToSell: (data) => Number(data.amountSale),
+      pageUrl: "https://roblex.pe/",
     }),
     getData({
       url: "https://api.decamoney.com/v1/rates",
       accesorToBuy: (data) => Number(data.exchange_rate.buy),
       accesorToSell: (data) => Number(data.exchange_rate.sell),
+      pageUrl: "https://decamoney.com/",
+    }),
+    getData({
+      url: "https://apim.tucambista.pe/api/rates",
+      headers: {
+        "Ocp-Apim-Subscription-Key":
+          "e4b6947d96a940e7bb8b39f462bcc56d;product=tucambista-production",
+      },
+      accesorToBuy: (data) => Number(data.bidRate),
+      accesorToSell: (data) => Number(data.offerRate),
+      pageUrl: "https://tucambista.pe/",
     }),
   ]);
   let result = Object.entries(dollar).sort(buyCriteriaDesc);
