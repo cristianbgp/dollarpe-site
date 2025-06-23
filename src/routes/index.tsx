@@ -29,14 +29,6 @@ export default function Home() {
         >
           CLI
         </A>
-        <a
-          href="https://github.com/cristianbgp/electron-dollarpe"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="bg-[#2A2B2F] hover:bg-[#585a60] text-white transition-colors rounded-md px-3 py-2"
-        >
-          Mac app
-        </a>
         <A
           href="https://github.com/cristianbgp/dollarpe-api"
           target="_blank"
@@ -48,7 +40,7 @@ export default function Home() {
       </div>
       <footer class="flex justify-center items-center pb-4">
         <a
-          href="https://github.com/cristianbgp"
+          href="https://cristianbgp.com"
           target="_blank"
           rel="noopener noreferrer"
         >
